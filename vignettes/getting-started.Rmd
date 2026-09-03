@@ -1,0 +1,247 @@
+---
+title: "Getting Started with ecoGLMM"
+author: "André Felipe Carneiro dos Santos, Bárbara Lins Caldas de Moraes, and Bruna Martins Bezerra"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with ecoGLMM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Overview
+
+`ecoGLMM` provides a reproducible workflow for fitting and comparing ecological
+generalized linear mixed models. For each response and environmental predictor,
+the package can fit an additive model and a model containing an interaction with
+a temporal factor. Candidate models are compared using AICc, and the selected
+models can be summarized, diagnosed, plotted, and exported.
+
+This vignette presents a complete analysis with simulated data. The code is not
+evaluated while the vignette is built, which keeps package installation and CRAN
+checks fast. Users can copy and run every example in an interactive R session.
+
+## Install and load the package
+
+```{r installation}
+# Install the CRAN version when available:
+install.packages("ecoGLMM")
+
+# Install the development version from GitHub:
+# install.packages("remotes")
+remotes::install_github("andre-fcsantos/ecoGLMM", upgrade = "never")
+
+library(ecoGLMM)
+```
+
+## Required data structure
+
+The input must be a data frame with:
+
+- one or more numeric response columns;
+- numeric environmental predictors;
+- a temporal factor, such as sampling period;
+- a grouping variable for the random intercept, such as site.
+
+Each row represents one observation. The example below creates 150 observations
+from 10 sites and five sampling periods.
+
+```{r simulate-data}
+set.seed(123)
+
+sites <- paste0("Site_", seq_len(10))
+period_levels <- c("T-0", "T-1", "T-2", "T-3", "T-4")
+
+example_data <- expand.grid(
+  site = sites,
+  period = period_levels,
+  replicate = seq_len(3)
+)
+
+n <- nrow(example_data)
+example_data$forest <- runif(n, 10, 95)
+example_data$urban <- runif(n, 0, 60)
+
+site_effect <- rnorm(length(sites), 0, 0.25)
+names(site_effect) <- sites
+
+linear_predictor <-
+  -0.5 +
+  0.015 * example_data$forest -
+  0.012 * example_data$urban +
+  site_effect[example_data$site]
+
+example_data$acoustic_index <- plogis(
+  linear_predictor + rnorm(n, 0, 0.35)
+)
+
+example_data$acoustic_index <- adjust_beta(example_data$acoustic_index)
+
+head(example_data)
+```
+
+## Configure the responses
+
+The configuration object requires the columns `response` and `family`. An
+optional `label` column provides a readable name for tables and figures.
+
+Supported family names are `"beta"`, `"gamma"`, `"gaussian"`,
+`"poisson"`, and `"nbinom2"`.
+
+```{r configuration}
+response_config <- data.frame(
+  response = "acoustic_index",
+  family = "beta",
+  label = "Simulated acoustic index"
+)
+```
+
+For ecoacoustic analyses, `prepare_acoustic_indices()` can transform NDSI from
+the interval [-1, 1] to (0, 1) and move boundary values away from zero and one
+before beta regression.
+
+```{r acoustic-preparation}
+# analysis_data <- prepare_acoustic_indices(
+#   data = raw_data,
+#   ndsi = "NDSI",
+#   beta_responses = c("AEI", "ACT"),
+#   ndsi_output = "NDSI_beta"
+# )
+```
+
+## Run the candidate-model analysis
+
+Here, additive and period-interaction models are fitted separately for
+`forest` and `urban`. Predictors are standardized by default. All candidate
+models use the same complete-case data set, allowing valid AICc comparisons.
+
+```{r run-analysis}
+fit <- run_ecoglmm(
+  data = example_data,
+  config = response_config,
+  predictors = c("forest", "urban"),
+  period = "period",
+  group = "site",
+  period_levels = period_levels,
+  standardize = TRUE,
+  complete_cases = TRUE,
+  include_additive = TRUE,
+  include_interactions = TRUE,
+  competitive_delta = 2
+)
+
+fit
+summary(fit)
+```
+
+## Inspect selection and coefficients
+
+```{r inspect-results}
+fit$selection$acoustic_index
+fit$interaction_tests$acoustic_index
+fit$coefficients
+fit$preparation
+```
+
+A model with the smallest AICc is ranked first. Models with
+`Delta_AICc <= 2` are marked as competitive. Akaike weights express relative
+support within the candidate set. The likelihood-ratio tests compare the nested
+additive and interaction models for each predictor.
+
+The columns `R2_marginal` and `R2_conditional` are calculated with
+`MuMIn::r.squaredGLMM()`. Alternative estimates from
+`performance::r2_nakagawa()` are provided in columns ending in
+`_performance`.
+
+## Run residual diagnostics
+
+```{r diagnostics}
+diagnostics <- diagnose_models(
+  fit,
+  nsim = 1000,
+  seed = 123
+)
+
+diagnostics$summary
+
+# Inspect the DHARMa residual plot:
+plot(diagnostics$residuals$acoustic_index)
+```
+
+The summary reports uniformity, dispersion, and outlier tests. A `"Passed"`
+status means that all three p-values exceed 0.05; it does not replace graphical
+inspection or ecological judgment.
+
+## Create figures
+
+```{r figures}
+plot_effect(fit, "acoustic_index")
+plot_selection(fit, "acoustic_index", metric = "delta")
+plot_selection(fit, "acoustic_index", metric = "weight")
+plot_coefficients(fit)
+```
+
+## Export the analysis
+
+```{r export}
+exported_files <- export_ecoglmm(
+  object = fit,
+  path = "ecoGLMM_results",
+  diagnostics = diagnostics,
+  figures = TRUE
+)
+
+exported_files
+```
+
+The output directory contains an Excel workbook with the overview,
+coefficients, model-selection results, interaction tests, and diagnostics. When
+`figures = TRUE`, publication-quality PNG files are also created.
+
+## Use the complete analysis script
+
+The installed package includes a complete, editable script for real data. Find
+its location with:
+
+```{r locate-script}
+script_path <- system.file(
+  "examples",
+  "run_ecoGLMM_real_data.R",
+  package = "ecoGLMM"
+)
+
+script_path
+file.edit(script_path)
+```
+
+Because files inside an installed package should not be edited directly, copy
+the script into the working directory before adapting it:
+
+```{r copy-script}
+file.copy(
+  from = script_path,
+  to = "run_ecoGLMM_real_data.R",
+  overwrite = FALSE
+)
+```
+
+Users can then change file paths, column mappings, responses, distributions,
+predictors, temporal levels, output folders, and analysis options in their own
+copy.
+
+## Reproducibility recommendations
+
+- Preserve the original data and analyse a separate working copy.
+- Record the response distribution selected for each ecological index.
+- Keep `complete_cases = TRUE` when comparing models by AICc.
+- Inspect convergence messages and DHARMa plots, not only p-values.
+- Report the candidate set, AICc, delta AICc, Akaike weights, coefficients,
+  confidence intervals, and marginal and conditional R-squared.
+- Save `sessionInfo()` with the exported results.
