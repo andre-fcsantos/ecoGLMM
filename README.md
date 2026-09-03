@@ -34,7 +34,8 @@ remotes::install_github("andre-fcsantos/ecoGLMM")
 
 The package includes two complementary resources:
 
-- A complete editable analysis script installed at `inst/examples/run_ecoGLMM_real_data.R`.
+- A generic editable template installed at `inst/examples/ecoGLMM_template.R`.
+- A complete ecoacoustic real-data workflow installed at `inst/examples/run_ecoGLMM_real_data.R`.
 - A step-by-step vignette covering data structure, model configuration, diagnostics, figures, and exports.
 
 After installation, open the vignette with:
@@ -46,8 +47,8 @@ vignette("getting-started", package = "ecoGLMM")
 Copy the complete script to the current working directory with:
 
 ```r
-script <- system.file("examples", "run_ecoGLMM_real_data.R", package = "ecoGLMM")
-file.copy(script, "run_ecoGLMM_real_data.R")
+script <- system.file("examples", "ecoGLMM_template.R", package = "ecoGLMM")
+file.copy(script, "ecoGLMM_template.R")
 ```
 
 Development dependencies can also be installed manually:
