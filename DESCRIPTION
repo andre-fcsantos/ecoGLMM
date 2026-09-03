@@ -1,0 +1,40 @@
+Package: ecoGLMM
+Type: Package
+Title: Reproducible Ecological Generalized Linear Mixed Model Pipelines
+Version: 0.1.3
+Authors@R: c(
+    person("André Felipe", "Carneiro dos Santos",
+      email = "andre.fcsantos@ufpe.br", role = c("aut", "cre"),
+      comment = c(ORCID = "0009-0000-8596-1975")),
+    person("Bárbara Lins Caldas de", "Moraes",
+      email = "barbara.lins@ufpe.br", role = "aut",
+      comment = c(ORCID = "0000-0002-1804-9828")),
+    person("Bruna Martins", "Bezerra",
+      email = "bruna.bezerra@ufpe.br", role = "aut",
+      comment = c(ORCID = "0000-0003-3039-121X"))
+    )
+Description: Fits and compares generalized linear mixed models for multiple
+    ecological responses and environmental predictors. The package supports
+    additive and temporal-interaction candidate models, AICc model selection,
+    likelihood-ratio tests, coefficient extraction, Nakagawa R-squared,
+    simulation-based diagnostics, figures, and spreadsheet exports.
+License: MIT + file LICENSE
+URL: https://github.com/andre-fcsantos/ecoGLMM
+BugReports: https://github.com/andre-fcsantos/ecoGLMM/issues
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.1.0)
+Imports:
+    DHARMa,
+    ggeffects,
+    ggplot2,
+    glmmTMB,
+    MuMIn,
+    performance,
+    stats,
+    utils,
+    writexl
+Suggests:
+    readxl,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
