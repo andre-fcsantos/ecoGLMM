@@ -1,0 +1,16 @@
+utils::globalVariables(c(
+  "Term",
+  "Estimate",
+  "CI_low",
+  "CI_high",
+  "x",
+  "y",
+  "predicted",
+  "conf.low",
+  "conf.high",
+  "group",
+  "Model",
+  "Delta_AICc",
+  "Type",
+  "Akaike_weight"
+))
