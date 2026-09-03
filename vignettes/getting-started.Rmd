@@ -26,9 +26,10 @@ the package can fit an additive model and a model containing an interaction with
 a temporal factor. Candidate models are compared using AICc, and the selected
 models can be summarized, diagnosed, plotted, and exported.
 
-This vignette presents a complete analysis with simulated data. The code is not
-evaluated while the vignette is built, which keeps package installation and CRAN
-checks fast. Users can copy and run every example in an interactive R session.
+This vignette presents a complete analysis with simulated data. The lightweight
+model example is evaluated when the vignette is built, whereas computationally
+intensive diagnostics and file exports are displayed without being run. Users
+can copy and run every example in an interactive R session.
 
 ## Install and load the package
 
