@@ -30,6 +30,26 @@ install.packages("remotes")
 remotes::install_github("andre-fcsantos/ecoGLMM")
 ```
 
+## Documentation
+
+The package includes two complementary resources:
+
+- A complete editable analysis script installed at `inst/examples/run_ecoGLMM_real_data.R`.
+- A step-by-step vignette covering data structure, model configuration, diagnostics, figures, and exports.
+
+After installation, open the vignette with:
+
+```r
+vignette("getting-started", package = "ecoGLMM")
+```
+
+Copy the complete script to the current working directory with:
+
+```r
+script <- system.file("examples", "run_ecoGLMM_real_data.R", package = "ecoGLMM")
+file.copy(script, "run_ecoGLMM_real_data.R")
+```
+
 Development dependencies can also be installed manually:
 
 ```r
@@ -96,6 +116,5 @@ columns ending in `_performance`.
 
 ## Development status
 
-This is an initial research version. Before CRAN submission, add real-data
-regression tests, check convergence warnings across supported families, and
-complete the user documentation.
+The package is under active development. Please report problems through the
+GitHub issue tracker.
