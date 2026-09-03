@@ -12,8 +12,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = TRUE
 )
+
+library(ecoGLMM)
 ```
 
 ## Overview
@@ -30,7 +32,7 @@ checks fast. Users can copy and run every example in an interactive R session.
 
 ## Install and load the package
 
-```{r installation}
+```{r installation, eval=FALSE}
 # Install the CRAN version when available:
 install.packages("ecoGLMM")
 
@@ -62,7 +64,8 @@ period_levels <- c("T-0", "T-1", "T-2", "T-3", "T-4")
 example_data <- expand.grid(
   site = sites,
   period = period_levels,
-  replicate = seq_len(3)
+  replicate = seq_len(3),
+  stringsAsFactors = FALSE
 )
 
 n <- nrow(example_data)
@@ -107,7 +110,7 @@ For ecoacoustic analyses, `prepare_acoustic_indices()` can transform NDSI from
 the interval [-1, 1] to (0, 1) and move boundary values away from zero and one
 before beta regression.
 
-```{r acoustic-preparation}
+```{r acoustic-preparation, eval=FALSE}
 # analysis_data <- prepare_acoustic_indices(
 #   data = raw_data,
 #   ndsi = "NDSI",
@@ -162,7 +165,7 @@ The columns `R2_marginal` and `R2_conditional` are calculated with
 
 ## Run residual diagnostics
 
-```{r diagnostics}
+```{r diagnostics, eval=FALSE}
 diagnostics <- diagnose_models(
   fit,
   nsim = 1000,
@@ -190,7 +193,7 @@ plot_coefficients(fit)
 
 ## Export the analysis
 
-```{r export}
+```{r export, eval=FALSE}
 exported_files <- export_ecoglmm(
   object = fit,
   path = "ecoGLMM_results",
@@ -210,7 +213,7 @@ coefficients, model-selection results, interaction tests, and diagnostics. When
 The installed package includes a complete, editable script for real data. Find
 its location with:
 
-```{r locate-script}
+```{r locate-script, eval=FALSE}
 script_path <- system.file(
   "examples",
   "run_ecoGLMM_real_data.R",
@@ -224,7 +227,7 @@ file.edit(script_path)
 Because files inside an installed package should not be edited directly, copy
 the script into the working directory before adapting it:
 
-```{r copy-script}
+```{r copy-script, eval=FALSE}
 file.copy(
   from = script_path,
   to = "run_ecoGLMM_real_data.R",
