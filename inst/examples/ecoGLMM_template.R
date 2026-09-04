@@ -2,16 +2,32 @@
 ## ecoGLMM — GENERIC ANALYSIS TEMPLATE
 ##
 ## Edit only Section 01 before running the complete script.
-## Input: one analysis-ready CSV or Excel table.
-## Each row must represent one observation.
+## Input: either one analysis-ready table or separate acoustic
+## and environmental tables in CSV or Excel format.
+## Each row of the final data set must represent one observation.
 ###############################################################
 
 ###############################################################
 ## 01. USER SETTINGS — EDIT THIS SECTION
 ###############################################################
 
-DATA_FILE <- NULL
-EXCEL_SHEET <- 1
+# Choose "single" for one analysis-ready table or "separate" to
+# join acoustic and environmental tables using the configured keys.
+INPUT_MODE <- "single"
+
+SINGLE_DATA_FILE <- NULL
+ACOUSTIC_DATA_FILE <- NULL
+ENVIRONMENTAL_DATA_FILE <- NULL
+
+SINGLE_EXCEL_SHEET <- 1
+ACOUSTIC_EXCEL_SHEET <- 1
+ENVIRONMENTAL_EXCEL_SHEET <- 1
+
+# These may be identical. Separate names are supported when the
+# site identifier differs between the two input tables.
+ACOUSTIC_JOIN_COLUMN <- "site"
+ENVIRONMENTAL_JOIN_COLUMN <- "site"
+
 GROUP_COLUMN <- "site"
 PERIOD_COLUMN <- "period"
 PERIOD_LEVELS <- c("T-0", "T-1", "T-2", "T-3", "T-4")
@@ -46,49 +62,149 @@ if (!requireNamespace("ecoGLMM", quietly = TRUE)) {
   )
 }
 
-if (is.null(DATA_FILE)) {
-  message("Select the analysis-ready data file.")
-  DATA_FILE <- file.choose()
+read_input_table <- function(path, excel_sheet = 1) {
+  extension <- tolower(tools::file_ext(path))
+
+  if (extension %in% c("xlsx", "xls")) {
+    if (!requireNamespace("readxl", quietly = TRUE)) {
+      stop("Install the readxl package to import Excel files.", call. = FALSE)
+    }
+    output <- readxl::read_excel(path, sheet = excel_sheet)
+  } else if (extension == "csv") {
+    output <- utils::read.csv(
+      path,
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+  } else {
+    stop("Use an .xlsx, .xls, or .csv input file.", call. = FALSE)
+  }
+
+  as.data.frame(output)
 }
 
-extension <- tolower(tools::file_ext(DATA_FILE))
+INPUT_MODE <- match.arg(tolower(INPUT_MODE), c("single", "separate"))
 
-if (extension %in% c("xlsx", "xls")) {
-  if (!requireNamespace("readxl", quietly = TRUE)) {
-    stop("Install the readxl package to import Excel files.", call. = FALSE)
+if (INPUT_MODE == "single") {
+  if (is.null(SINGLE_DATA_FILE)) {
+    message("Select the analysis-ready data file.")
+    SINGLE_DATA_FILE <- file.choose()
   }
-  analysis_data <- readxl::read_excel(DATA_FILE, sheet = EXCEL_SHEET)
-} else if (extension == "csv") {
-  analysis_data <- utils::read.csv(
-    DATA_FILE,
-    stringsAsFactors = FALSE,
-    check.names = FALSE
+
+  analysis_data <- read_input_table(
+    SINGLE_DATA_FILE,
+    excel_sheet = SINGLE_EXCEL_SHEET
   )
 } else {
-  stop("Use an .xlsx, .xls, or .csv input file.", call. = FALSE)
+  if (is.null(ACOUSTIC_DATA_FILE)) {
+    message("Select the acoustic data file.")
+    ACOUSTIC_DATA_FILE <- file.choose()
+  }
+  if (is.null(ENVIRONMENTAL_DATA_FILE)) {
+    message("Select the environmental data file.")
+    ENVIRONMENTAL_DATA_FILE <- file.choose()
+  }
+
+  acoustic_data <- read_input_table(
+    ACOUSTIC_DATA_FILE,
+    excel_sheet = ACOUSTIC_EXCEL_SHEET
+  )
+  environmental_data <- read_input_table(
+    ENVIRONMENTAL_DATA_FILE,
+    excel_sheet = ENVIRONMENTAL_EXCEL_SHEET
+  )
+
+  if (!ACOUSTIC_JOIN_COLUMN %in% names(acoustic_data)) {
+    stop(
+      "The acoustic join column was not found: ",
+      ACOUSTIC_JOIN_COLUMN,
+      call. = FALSE
+    )
+  }
+  if (!ENVIRONMENTAL_JOIN_COLUMN %in% names(environmental_data)) {
+    stop(
+      "The environmental join column was not found: ",
+      ENVIRONMENTAL_JOIN_COLUMN,
+      call. = FALSE
+    )
+  }
+  if (anyNA(environmental_data[[ENVIRONMENTAL_JOIN_COLUMN]])) {
+    stop("The environmental join column contains missing values.", call. = FALSE)
+  }
+  if (anyDuplicated(environmental_data[[ENVIRONMENTAL_JOIN_COLUMN]])) {
+    stop(
+      "Each join value must occur only once in the environmental table.",
+      call. = FALSE
+    )
+  }
+
+  overlapping_columns <- intersect(
+    setdiff(names(acoustic_data), ACOUSTIC_JOIN_COLUMN),
+    setdiff(names(environmental_data), ENVIRONMENTAL_JOIN_COLUMN)
+  )
+
+  if (length(overlapping_columns) > 0) {
+    stop(
+      "Non-key columns occur in both input tables: ",
+      paste(overlapping_columns, collapse = ", "),
+      ". Rename or remove them before joining.",
+      call. = FALSE
+    )
+  }
+
+  unmatched_values <- setdiff(
+    unique(acoustic_data[[ACOUSTIC_JOIN_COLUMN]]),
+    unique(environmental_data[[ENVIRONMENTAL_JOIN_COLUMN]])
+  )
+
+  if (length(unmatched_values) > 0) {
+    warning(
+      "Environmental data were not found for: ",
+      paste(unmatched_values, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  acoustic_n <- nrow(acoustic_data)
+  analysis_data <- merge(
+    acoustic_data,
+    environmental_data,
+    by.x = ACOUSTIC_JOIN_COLUMN,
+    by.y = ENVIRONMENTAL_JOIN_COLUMN,
+    all.x = TRUE,
+    sort = FALSE
+  )
+
+  if (nrow(analysis_data) != acoustic_n) {
+    stop(
+      "The join changed the number of acoustic observations. ",
+      "Check the configured join columns.",
+      call. = FALSE
+    )
+  }
 }
 
-analysis_data <- as.data.frame(analysis_data)
-
-required_columns <- unique(c(
-  RESPONSE_CONFIG$response,
+structure_columns <- unique(c(
   PREDICTORS,
   PERIOD_COLUMN,
   GROUP_COLUMN
 ))
 
-missing_columns <- setdiff(required_columns, names(analysis_data))
+missing_structure_columns <- setdiff(
+  structure_columns,
+  names(analysis_data)
+)
 
-if (length(missing_columns) > 0) {
+if (length(missing_structure_columns) > 0) {
   stop(
-    "Columns not found in the input table: ",
-    paste(missing_columns, collapse = ", "),
+    "Columns not found in the imported data: ",
+    paste(missing_structure_columns, collapse = ", "),
     call. = FALSE
   )
 }
 
 cat(
-  "Imported ", nrow(analysis_data), " rows and ",
+  "Prepared ", nrow(analysis_data), " rows and ",
   ncol(analysis_data), " columns.\n",
   sep = ""
 )
@@ -98,8 +214,8 @@ cat(
 ###############################################################
 
 # For an NDSI column ranging from -1 to 1 and beta-distributed indices,
-# uncomment and adapt the following block. Remember to use the resulting
-# response names in RESPONSE_CONFIG.
+# uncomment and adapt the following block. Use the resulting response
+# names, such as "NDSI_beta", in RESPONSE_CONFIG.
 #
 # analysis_data <- ecoGLMM::prepare_acoustic_indices(
 #   data = analysis_data,
@@ -108,6 +224,21 @@ cat(
 #   ndsi_output = "NDSI_beta",
 #   epsilon = 0.001
 # )
+
+# Response validation occurs after optional transformations so newly
+# created columns such as NDSI_beta are recognized correctly.
+missing_responses <- setdiff(
+  RESPONSE_CONFIG$response,
+  names(analysis_data)
+)
+
+if (length(missing_responses) > 0) {
+  stop(
+    "Response columns not found after data preparation: ",
+    paste(missing_responses, collapse = ", "),
+    call. = FALSE
+  )
+}
 
 ###############################################################
 ## 04. FIT AND COMPARE CANDIDATE MODELS
@@ -170,6 +301,8 @@ if (RUN_DIAGNOSTICS) {
 #   metric = "delta"
 # )
 # ecoGLMM::plot_coefficients(results)
+
+dir.create(OUTPUT_DIRECTORY, recursive = TRUE, showWarnings = FALSE)
 
 generated_files <- ecoGLMM::export_ecoglmm(
   object = results,
