@@ -33,6 +33,19 @@ PERIOD_COLUMN <- "period"
 PERIOD_LEVELS <- c("T-0", "T-1", "T-2", "T-3", "T-4")
 PREDICTORS <- c("forest", "urban")
 
+# Set to TRUE when NDSI must be converted from [-1, 1] to (0, 1)
+# and other beta-distributed responses must be moved away from
+# exact zero and one.
+PREPARE_ACOUSTIC_INDICES <- FALSE
+NDSI_COLUMN <- "NDSI"
+NDSI_OUTPUT_COLUMN <- "NDSI_beta"
+BETA_RESPONSE_COLUMNS <- c("AEI", "ACT")
+BETA_EPSILON <- 0.001
+
+# Optional cleaning of non-analytical columns after import.
+DROP_EMPTY_COLUMNS <- TRUE
+DROP_COLUMNS <- c("-")
+
 # One row per response. Supported families:
 # "beta", "gamma", "gaussian", "poisson", and "nbinom2".
 RESPONSE_CONFIG <- data.frame(
@@ -95,6 +108,13 @@ if (INPUT_MODE == "single") {
     SINGLE_DATA_FILE,
     excel_sheet = SINGLE_EXCEL_SHEET
   )
+
+  cat(
+    "Imported one analysis-ready table: ",
+    basename(SINGLE_DATA_FILE),
+    "\n",
+    sep = ""
+  )
 } else {
   if (is.null(ACOUSTIC_DATA_FILE)) {
     message("Select the acoustic data file.")
@@ -112,6 +132,12 @@ if (INPUT_MODE == "single") {
   environmental_data <- read_input_table(
     ENVIRONMENTAL_DATA_FILE,
     excel_sheet = ENVIRONMENTAL_EXCEL_SHEET
+  )
+
+  cat(
+    "Imported acoustic table: ", basename(ACOUSTIC_DATA_FILE), "\n",
+    "Imported environmental table: ", basename(ENVIRONMENTAL_DATA_FILE), "\n",
+    sep = ""
   )
 
   if (!ACOUSTIC_JOIN_COLUMN %in% names(acoustic_data)) {
@@ -166,6 +192,21 @@ if (INPUT_MODE == "single") {
   }
 
   acoustic_n <- nrow(acoustic_data)
+  row_order_column <- ".ecoGLMM_input_row"
+
+  if (row_order_column %in% c(
+    names(acoustic_data),
+    names(environmental_data)
+  )) {
+    stop(
+      "Reserved internal column found in an input table: ",
+      row_order_column,
+      call. = FALSE
+    )
+  }
+
+  acoustic_data[[row_order_column]] <- seq_len(acoustic_n)
+
   analysis_data <- merge(
     acoustic_data,
     environmental_data,
@@ -182,6 +223,33 @@ if (INPUT_MODE == "single") {
       call. = FALSE
     )
   }
+
+  analysis_data <- analysis_data[
+    order(analysis_data[[row_order_column]]),
+    ,
+    drop = FALSE
+  ]
+  analysis_data[[row_order_column]] <- NULL
+
+  cat(
+    "Joined ", acoustic_n, " acoustic observations to ",
+    nrow(environmental_data), " environmental records.\n",
+    sep = ""
+  )
+}
+
+if (DROP_EMPTY_COLUMNS) {
+  empty_columns <- vapply(
+    analysis_data,
+    function(column) all(is.na(column)),
+    logical(1)
+  )
+  analysis_data <- analysis_data[, !empty_columns, drop = FALSE]
+}
+
+columns_to_drop <- intersect(DROP_COLUMNS, names(analysis_data))
+if (length(columns_to_drop) > 0) {
+  analysis_data[columns_to_drop] <- NULL
 }
 
 structure_columns <- unique(c(
@@ -206,6 +274,9 @@ if (length(missing_structure_columns) > 0) {
 cat(
   "Prepared ", nrow(analysis_data), " rows and ",
   ncol(analysis_data), " columns.\n",
+  "Available columns: ",
+  paste(names(analysis_data), collapse = ", "),
+  "\n",
   sep = ""
 )
 
@@ -213,17 +284,18 @@ cat(
 ## 03. OPTIONAL RESPONSE TRANSFORMATIONS
 ###############################################################
 
-# For an NDSI column ranging from -1 to 1 and beta-distributed indices,
-# uncomment and adapt the following block. Use the resulting response
-# names, such as "NDSI_beta", in RESPONSE_CONFIG.
-#
-# analysis_data <- ecoGLMM::prepare_acoustic_indices(
-#   data = analysis_data,
-#   ndsi = "NDSI",
-#   beta_responses = c("AEI", "ACT"),
-#   ndsi_output = "NDSI_beta",
-#   epsilon = 0.001
-# )
+# Configure this operation in Section 01. When enabled, NDSI is
+# converted from [-1, 1] to (0, 1), and configured beta responses
+# are moved away from exact boundary values.
+if (PREPARE_ACOUSTIC_INDICES) {
+  analysis_data <- ecoGLMM::prepare_acoustic_indices(
+    data = analysis_data,
+    ndsi = NDSI_COLUMN,
+    beta_responses = BETA_RESPONSE_COLUMNS,
+    ndsi_output = NDSI_OUTPUT_COLUMN,
+    epsilon = BETA_EPSILON
+  )
+}
 
 # Response validation occurs after optional transformations so newly
 # created columns such as NDSI_beta are recognized correctly.
@@ -233,9 +305,23 @@ missing_responses <- setdiff(
 )
 
 if (length(missing_responses) > 0) {
+  transformation_hint <- ""
+
+  if (
+    NDSI_OUTPUT_COLUMN %in% missing_responses &&
+    !PREPARE_ACOUSTIC_INDICES
+  ) {
+    transformation_hint <- paste0(
+      " To create ", NDSI_OUTPUT_COLUMN,
+      ", set PREPARE_ACOUSTIC_INDICES <- TRUE in Section 01."
+    )
+  }
+
   stop(
     "Response columns not found after data preparation: ",
     paste(missing_responses, collapse = ", "),
+    ".",
+    transformation_hint,
     call. = FALSE
   )
 }
