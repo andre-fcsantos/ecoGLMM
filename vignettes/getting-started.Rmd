@@ -209,36 +209,58 @@ The output directory contains an Excel workbook with the overview,
 coefficients, model-selection results, interaction tests, and diagnostics. When
 `figures = TRUE`, publication-quality PNG files are also created.
 
-## Use the complete analysis script
+## Use the complete generic analysis template
 
-The installed package includes a complete, editable script for real data. Find
-its location with:
+The installed package includes a complete generic template for analyses based on
+an analysis-ready CSV or Excel table. The example uses fictional column names
+and does not contain data or settings from any unpublished study.
 
-```{r locate-script, eval=FALSE}
-script_path <- system.file(
+Locate, copy, and open an editable version of the template with:
+
+```{r locate-template, eval=FALSE}
+template_path <- system.file(
   "examples",
-  "run_ecoGLMM_real_data.R",
+  "ecoGLMM_template.R",
   package = "ecoGLMM"
 )
 
-script_path
-file.edit(script_path)
+file.copy(
+  from = template_path,
+  to = "ecoGLMM_template.R",
+  overwrite = FALSE
+)
+
+file.edit("ecoGLMM_template.R")
 ```
 
-Because files inside an installed package should not be edited directly, copy
-the script into the working directory before adapting it:
+Edit only Section 01 of the copied file before running the complete script.
+The full template is reproduced below directly from the file distributed with
+the package, ensuring that the vignette and script remain synchronized.
 
-```{r copy-script, eval=FALSE}
-file.copy(
-  from = script_path,
-  to = "run_ecoGLMM_real_data.R",
-  overwrite = FALSE
+```{r display-generic-template, echo=FALSE, results="asis"}
+template_path <- system.file(
+  "examples",
+  "ecoGLMM_template.R",
+  package = "ecoGLMM"
+)
+
+if (!nzchar(template_path)) {
+  stop("The generic analysis template was not found in the installed package.")
+}
+
+template_code <- readLines(template_path, warn = FALSE)
+
+cat(
+  "```r\n",
+  paste(template_code, collapse = "\n"),
+  "\n```\n",
+  sep = ""
 )
 ```
 
-Users can then change file paths, column mappings, responses, distributions,
-predictors, temporal levels, output folders, and analysis options in their own
-copy.
+Users should adapt file paths, column mappings, responses, distributions,
+predictors, temporal levels, output folders, and analysis options only in their
+own copy.
 
 ## Reproducibility recommendations
 
