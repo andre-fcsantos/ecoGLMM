@@ -53,8 +53,13 @@ The input must be a data frame with:
 - a temporal factor, such as sampling period;
 - a grouping variable for the random intercept, such as site.
 
-Each row represents one observation. The example below creates 150 observations
-from 10 sites and five sampling periods.
+The final analysis data must contain all these columns in the same data frame.
+The generic template can import either one analysis-ready table or separate
+acoustic and environmental tables. In separate mode, it validates the join keys
+and combines the tables without changing the number of acoustic observations.
+
+Each row of the resulting data set represents one observation. The example below
+creates 150 observations from 10 sites and five sampling periods.
 
 ```{r simulate-data}
 set.seed(123)
@@ -211,9 +216,12 @@ coefficients, model-selection results, interaction tests, and diagnostics. When
 
 ## Use the complete generic analysis template
 
-The installed package includes a complete generic template for analyses based on
-an analysis-ready CSV or Excel table. The example uses fictional column names
-and does not contain data or settings from any unpublished study.
+The installed package includes a complete generic template that accepts either
+one analysis-ready table or separate acoustic and environmental tables in CSV
+or Excel format. When separate files are used, the template joins them by a
+user-defined site key and checks for duplicated or unmatched values. The example
+uses fictional column names and does not contain data or settings from any
+unpublished study.
 
 Locate, copy, and open an editable version of the template with:
 
