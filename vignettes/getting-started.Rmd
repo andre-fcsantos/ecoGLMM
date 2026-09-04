@@ -268,7 +268,20 @@ cat(
 
 Users should adapt file paths, column mappings, responses, distributions,
 predictors, temporal levels, output folders, and analysis options only in their
-own copy.
+own copy. After changing any setting, run the script again from Section 01.
+
+For two input tables, set `INPUT_MODE <- "separate"` and provide the exact
+join-column name used by each table. The template verifies uniqueness in the
+environmental table, reports unmatched keys, preserves the original acoustic-row
+order, removes configured non-analytical columns, and confirms the final column
+names.
+
+For ecoacoustic data requiring NDSI and beta-response preparation, set
+`PREPARE_ACOUSTIC_INDICES <- TRUE` in Section 01. The corresponding column
+names and boundary adjustment can be configured without editing the processing
+code. If the option is left disabled while the configured NDSI output is
+requested, the template returns a targeted instruction instead of a generic
+missing-column error.
 
 ## Reproducibility recommendations
 
