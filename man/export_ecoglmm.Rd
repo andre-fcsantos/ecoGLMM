@@ -6,7 +6,7 @@
 \usage{
 export_ecoglmm(
   object,
-  path = "ecoGLMM_results",
+  path,
   diagnostics = NULL,
   figures = TRUE
 )
