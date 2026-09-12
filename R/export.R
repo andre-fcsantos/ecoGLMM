@@ -8,7 +8,10 @@
 #' @export
 export_ecoglmm <- function(object, path,
                            diagnostics = NULL, figures = TRUE) {
-  if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {\n    stop("Supply a non-empty output directory in `path`.", call. = FALSE)\n  }\n  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
+    stop("Supply a non-empty output directory in `path`.", call. = FALSE)
+  }
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
   selection <- do.call(rbind, lapply(names(object$selection), function(x) {
     cbind(Response = x, object$selection[[x]])
   }))
