@@ -241,7 +241,8 @@ file.copy(
 file.edit(file.path(tempdir(), "ecoGLMM_template.R"))
 ```
 
-For a persistent copy, choose your own writable destination instead of `tempdir()`.\nEdit only Section 01 of the copied file before running the complete script.
+For a persistent copy, choose your own writable destination instead of `tempdir()`.
+Edit only Section 01 of the copied file before running the complete script.
 The full template is reproduced below directly from the file distributed with
 the package, ensuring that the vignette and script remain synchronized.
 
