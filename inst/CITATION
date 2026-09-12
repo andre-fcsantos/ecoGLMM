@@ -11,16 +11,16 @@ bibentry(
       comment = c(ORCID = "0009-0000-8596-1975")
     ),
     person(
-      given = "Bárbara Lins Caldas de",
-      family = "Moraes",
-      email = "barbara.lins@ufpe.br",
-      comment = c(ORCID = "0000-0002-1804-9828")
-    ),
-    person(
       given = "Bruna Martins",
       family = "Bezerra",
       email = "bruna.bezerra@ufpe.br",
       comment = c(ORCID = "0000-0003-3039-121X")
+    ),
+    person(
+      given = "Bárbara Lins Caldas de",
+      family = "Moraes",
+      email = "barbara.lins@ufpe.br",
+      comment = c(ORCID = "0000-0002-1804-9828")
     )
   ),
   year = "2026",
