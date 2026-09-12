@@ -61,7 +61,9 @@ COMPETITIVE_DELTA <- 2
 RUN_DIAGNOSTICS <- TRUE
 DHARMA_SIMULATIONS <- 1000
 RANDOM_SEED <- 123
-# Set an explicit output directory for permanent results. The default\n# uses a temporary directory and will not persist after this R session.\nOUTPUT_DIRECTORY <- file.path(tempdir(), "ecoGLMM_results")
+# Set an explicit output directory for permanent results. The default
+# uses a temporary directory and will not persist after this R session.
+OUTPUT_DIRECTORY <- file.path(tempdir(), "ecoGLMM_results")
 
 ###############################################################
 ## 02. PACKAGE AND DATA IMPORT
