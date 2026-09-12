@@ -1,14 +1,14 @@
 #' Export ecoGLMM results to an output directory
 #'
 #' @param object An `ecoglmm_fit` object.
-#' @param path Output directory.
+#' @param path Output directory. Must be explicitly supplied by the caller.
 #' @param diagnostics Optional result returned by [diagnose_models()].
 #' @param figures Save effect and selection figures.
 #' @return Invisibly returns generated file paths.
 #' @export
-export_ecoglmm <- function(object, path = "ecoGLMM_results",
+export_ecoglmm <- function(object, path,
                            diagnostics = NULL, figures = TRUE) {
-  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {\n    stop("Supply a non-empty output directory in `path`.", call. = FALSE)\n  }\n  dir.create(path, recursive = TRUE, showWarnings = FALSE)
   selection <- do.call(rbind, lapply(names(object$selection), function(x) {
     cbind(Response = x, object$selection[[x]])
   }))
