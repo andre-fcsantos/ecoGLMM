@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with ecoGLMM"
-author: "André Felipe Carneiro dos Santos, Bárbara Lins Caldas de Moraes, and Bruna Martins Bezerra"
+author: "André Felipe Carneiro dos Santos, Bruna Martins Bezerra, and Bárbara Lins Caldas de Moraes"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting Started with ecoGLMM}
