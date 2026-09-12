@@ -202,7 +202,7 @@ plot_coefficients(fit)
 ```{r export, eval=FALSE}
 exported_files <- export_ecoglmm(
   object = fit,
-  path = "ecoGLMM_results",
+  path = file.path(tempdir(), "ecoGLMM_results"),
   diagnostics = diagnostics,
   figures = TRUE
 )
@@ -234,14 +234,14 @@ template_path <- system.file(
 
 file.copy(
   from = template_path,
-  to = "ecoGLMM_template.R",
+  to = file.path(tempdir(), "ecoGLMM_template.R"),
   overwrite = FALSE
 )
 
-file.edit("ecoGLMM_template.R")
+file.edit(file.path(tempdir(), "ecoGLMM_template.R"))
 ```
 
-Edit only Section 01 of the copied file before running the complete script.
+For a persistent copy, choose your own writable destination instead of `tempdir()`.\nEdit only Section 01 of the copied file before running the complete script.
 The full template is reproduced below directly from the file distributed with
 the package, ensuring that the vignette and script remain synchronized.
 
