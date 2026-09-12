@@ -9,8 +9,8 @@ Universidade Federal de Pernambuco (UFPE).
 
 - André Felipe Carneiro dos Santos — author and maintainer —
   ORCID: 0009-0000-8596-1975
-- Bárbara Lins Caldas de Moraes — author — ORCID: 0000-0002-1804-9828
 - Bruna Martins Bezerra — author — ORCID: 0000-0003-3039-121X
+- Bárbara Lins Caldas de Moraes — author — ORCID: 0000-0002-1804-9828
 
 Version 0.1.3 fits one additive and one temporal-interaction model for each
 response–predictor combination, compares models using AICc, performs nested
@@ -35,7 +35,6 @@ remotes::install_github("andre-fcsantos/ecoGLMM")
 The package includes two complementary resources:
 
 - A generic editable template installed at `inst/examples/ecoGLMM_template.R`.
-- A complete ecoacoustic real-data workflow installed at `inst/examples/run_ecoGLMM_real_data.R`.
 - A step-by-step vignette covering data structure, model configuration, diagnostics, figures, and exports.
 
 After installation, open the vignette with:
