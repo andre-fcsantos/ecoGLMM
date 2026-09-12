@@ -17,7 +17,7 @@ Description: Fits and compares generalized linear mixed models for multiple
     ecological responses and environmental predictors. The package supports
     additive and temporal-interaction candidate models, AICc model selection,
     likelihood-ratio tests, coefficient extraction, Nakagawa R-squared,
-    simulation-based diagnostics, figures, and spreadsheet exports.
+    simulation-based diagnostics, figures, and spreadsheet exports.\n    Model selection follows Burnham and Anderson (2002, ISBN:9780387953649);\n    marginal and conditional R-squared follow Nakagawa and Schielzeth (2013)\n    <doi:10.1111/j.2041-210x.2012.00261.x>.
 License: MIT + file LICENSE
 URL: https://github.com/andre-fcsantos/ecoGLMM
 BugReports: https://github.com/andre-fcsantos/ecoGLMM/issues
