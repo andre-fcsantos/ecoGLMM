@@ -41,7 +41,8 @@ export_ecoglmm <- function(object, path,
     cbind(Response = x, object$selection[[x]])
   }))
   lrt <- do.call(rbind, lapply(names(object$interaction_tests), function(x) {
-    cbind(Response = x, object$interaction_tests[[x]])
+    tab <- object$interaction_tests[[x]]
+    cbind(Response = rep(x, nrow(tab)), tab)
   }))
   sheets <- list(Overview = object$overview, Coefficients = object$coefficients,
                  Model_selection = selection, Interaction_LRT = lrt)
