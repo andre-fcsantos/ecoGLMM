@@ -232,13 +232,27 @@ template_path <- system.file(
   package = "ecoGLMM"
 )
 
-file.copy(
+if (!nzchar(template_path) || !file.exists(template_path)) {
+  stop("The generic analysis template was not found in the installed package.")
+}
+
+template_copy <- file.path(tempdir(), "ecoGLMM_template.R")
+
+copied <- file.copy(
   from = template_path,
-  to = file.path(tempdir(), "ecoGLMM_template.R"),
-  overwrite = FALSE
+  to = template_copy,
+  overwrite = TRUE
 )
 
-file.edit(file.path(tempdir(), "ecoGLMM_template.R"))
+if (!copied || !file.exists(template_copy) || file.size(template_copy) == 0) {
+  stop("The generic analysis template could not be copied correctly.")
+}
+
+if (interactive()) {
+  file.edit(template_copy)
+}
+
+template_copy
 ```
 
 For a persistent copy, choose your own writable destination instead of `tempdir()`.
