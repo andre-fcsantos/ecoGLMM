@@ -45,6 +45,17 @@ fit_candidate_set <- function(data, response, predictors, period, group,
 #' @param models Named list of fitted models.
 #' @param competitive_delta Maximum delta AICc defining competitive models.
 #' @return Model-selection data frame.
+#' @examples
+#' dat <- data.frame(
+#'   y = c(1.0, 1.3, 1.2, 1.7, 1.5, 2.0, 1.8, 2.2, 2.1, 2.5, 2.4, 2.8),
+#'   x = rep(1:6, 2),
+#'   period = factor(rep(c("early", "late"), each = 6))
+#' )
+#' models <- list(
+#'   x_Add = stats::lm(y ~ x + period, data = dat),
+#'   x_Int = stats::lm(y ~ x * period, data = dat)
+#' )
+#' compare_models(models)
 #' @export
 compare_models <- function(models, competitive_delta = 2) {
   if (!is.list(models) || !length(models) || is.null(names(models))) {
@@ -85,6 +96,29 @@ compare_models <- function(models, competitive_delta = 2) {
 #' @param models Named candidate-model list.
 #' @param predictors Predictor names.
 #' @return Data frame of likelihood-ratio tests.
+#' @examples
+#' set.seed(1)
+#' example_data <- expand.grid(
+#'   site = paste0("s", 1:6),
+#'   period = c("early", "late"),
+#'   replicate = 1:3,
+#'   stringsAsFactors = FALSE
+#' )
+#' example_data$forest <- runif(nrow(example_data))
+#' site_effect <- setNames(rnorm(6, sd = 0.3), paste0("s", 1:6))
+#' example_data$index <- 1 + 0.8 * example_data$forest +
+#'   0.4 * (example_data$period == "late") +
+#'   site_effect[example_data$site] + rnorm(nrow(example_data), sd = 0.15)
+#' config <- data.frame(response = "index", family = "gaussian")
+#' fit <- run_ecoglmm(
+#'   data = example_data,
+#'   config = config,
+#'   predictors = "forest",
+#'   period = "period",
+#'   group = "site",
+#'   include_interactions = TRUE
+#' )
+#' test_interactions(fit$models$index, predictors = "forest")
 #' @export
 test_interactions <- function(models, predictors) {
   rows <- lapply(predictors, function(x) {

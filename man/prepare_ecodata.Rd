@@ -40,3 +40,17 @@ Prepared data with preparation metadata stored as attributes.
 \description{
 Validate and prepare ecological modelling data
 }
+\examples{
+dat <- data.frame(
+  response = c(1.1, 1.4, 1.2, 1.8, 1.5, 2),
+  forest = c(10, 20, 30, 40, 50, 60),
+  period = rep(c("early", "late"), 3),
+  site = rep(c("a", "b", "c"), each = 2)
+)
+config <- data.frame(response = "response", family = "gaussian")
+prepared <- prepare_ecodata(
+  dat, config, predictors = "forest",
+  period = "period", group = "site"
+)
+head(prepared)
+}

@@ -4,6 +4,29 @@
 #' @param response Response name.
 #' @param show_observed Add observed values.
 #' @return A ggplot object.
+#' @examples
+#' set.seed(1)
+#' example_data <- expand.grid(
+#'   site = paste0("s", 1:6),
+#'   period = c("early", "late"),
+#'   replicate = 1:3,
+#'   stringsAsFactors = FALSE
+#' )
+#' example_data$forest <- runif(nrow(example_data))
+#' site_effect <- setNames(rnorm(6, sd = 0.3), paste0("s", 1:6))
+#' example_data$index <- 1 + 0.8 * example_data$forest +
+#'   0.4 * (example_data$period == "late") +
+#'   site_effect[example_data$site] + rnorm(nrow(example_data), sd = 0.15)
+#' config <- data.frame(response = "index", family = "gaussian")
+#' fit <- run_ecoglmm(
+#'   data = example_data,
+#'   config = config,
+#'   predictors = "forest",
+#'   period = "period",
+#'   group = "site",
+#'   include_interactions = FALSE
+#' )
+#' plot_effect(fit, "index", show_observed = FALSE)
 #' @export
 plot_effect <- function(object, response, show_observed = TRUE) {
   if (!response %in% names(object$best_models)) {
@@ -51,6 +74,29 @@ plot_effect <- function(object, response, show_observed = TRUE) {
 #' @param response Response name.
 #' @param metric Either `delta` or `weight`.
 #' @return A ggplot object.
+#' @examples
+#' set.seed(1)
+#' example_data <- expand.grid(
+#'   site = paste0("s", 1:6),
+#'   period = c("early", "late"),
+#'   replicate = 1:3,
+#'   stringsAsFactors = FALSE
+#' )
+#' example_data$forest <- runif(nrow(example_data))
+#' site_effect <- setNames(rnorm(6, sd = 0.3), paste0("s", 1:6))
+#' example_data$index <- 1 + 0.8 * example_data$forest +
+#'   0.4 * (example_data$period == "late") +
+#'   site_effect[example_data$site] + rnorm(nrow(example_data), sd = 0.15)
+#' config <- data.frame(response = "index", family = "gaussian")
+#' fit <- run_ecoglmm(
+#'   data = example_data,
+#'   config = config,
+#'   predictors = "forest",
+#'   period = "period",
+#'   group = "site",
+#'   include_interactions = FALSE
+#' )
+#' plot_selection(fit, "index")
 #' @export
 plot_selection <- function(object, response, metric = c("delta", "weight")) {
   metric <- match.arg(metric)
@@ -76,6 +122,29 @@ plot_selection <- function(object, response, metric = c("delta", "weight")) {
 #' @param object An `ecoglmm_fit` object.
 #' @param include_intercept Include intercept terms.
 #' @return A faceted ggplot object.
+#' @examples
+#' set.seed(1)
+#' example_data <- expand.grid(
+#'   site = paste0("s", 1:6),
+#'   period = c("early", "late"),
+#'   replicate = 1:3,
+#'   stringsAsFactors = FALSE
+#' )
+#' example_data$forest <- runif(nrow(example_data))
+#' site_effect <- setNames(rnorm(6, sd = 0.3), paste0("s", 1:6))
+#' example_data$index <- 1 + 0.8 * example_data$forest +
+#'   0.4 * (example_data$period == "late") +
+#'   site_effect[example_data$site] + rnorm(nrow(example_data), sd = 0.15)
+#' config <- data.frame(response = "index", family = "gaussian")
+#' fit <- run_ecoglmm(
+#'   data = example_data,
+#'   config = config,
+#'   predictors = "forest",
+#'   period = "period",
+#'   group = "site",
+#'   include_interactions = FALSE
+#' )
+#' plot_coefficients(fit)
 #' @export
 plot_coefficients <- function(object, include_intercept = FALSE) {
   tab <- object$coefficients

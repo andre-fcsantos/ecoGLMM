@@ -29,3 +29,11 @@ A modified data frame.
 \description{
 Prepare common acoustic-index transformations
 }
+\examples{
+indices <- data.frame(
+  NDSI = c(-1, 0, 1),
+  AEI = c(0, 0.5, 1),
+  ACT = c(0.2, 0.6, 0.9)
+)
+prepare_acoustic_indices(indices)
+}

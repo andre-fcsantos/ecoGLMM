@@ -17,3 +17,15 @@ Model-selection data frame.
 \description{
 Compare a candidate set using corrected Akaike information criterion
 }
+\examples{
+dat <- data.frame(
+  y = c(1.0, 1.3, 1.2, 1.7, 1.5, 2.0, 1.8, 2.2, 2.1, 2.5, 2.4, 2.8),
+  x = rep(1:6, 2),
+  period = factor(rep(c("early", "late"), each = 6))
+)
+models <- list(
+  x_Add = stats::lm(y ~ x + period, data = dat),
+  x_Int = stats::lm(y ~ x * period, data = dat)
+)
+compare_models(models)
+}

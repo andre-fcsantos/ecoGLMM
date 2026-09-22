@@ -17,3 +17,6 @@ A numeric vector with boundary values adjusted.
 \description{
 Keep proportions inside the open interval (0, 1)
 }
+\examples{
+adjust_beta(c(0, 0.25, 0.5, 0.75, 1))
+}

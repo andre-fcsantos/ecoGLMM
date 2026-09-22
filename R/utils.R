@@ -3,6 +3,8 @@
 #' @param x Numeric vector.
 #' @param epsilon Small boundary value.
 #' @return A numeric vector with boundary values adjusted.
+#' @examples
+#' adjust_beta(c(0, 0.25, 0.5, 0.75, 1))
 #' @export
 adjust_beta <- function(x, epsilon = 0.001) {
   if (!is.numeric(x)) stop("`x` must be numeric.", call. = FALSE)

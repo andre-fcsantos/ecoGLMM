@@ -17,3 +17,27 @@ A faceted ggplot object.
 \description{
 Plot coefficients and confidence intervals
 }
+\examples{
+set.seed(1)
+example_data <- expand.grid(
+  site = paste0("s", 1:6),
+  period = c("early", "late"),
+  replicate = 1:3,
+  stringsAsFactors = FALSE
+)
+example_data$forest <- runif(nrow(example_data))
+site_effect <- setNames(rnorm(6, sd = 0.3), paste0("s", 1:6))
+example_data$index <- 1 + 0.8 * example_data$forest +
+  0.4 * (example_data$period == "late") +
+  site_effect[example_data$site] + rnorm(nrow(example_data), sd = 0.15)
+config <- data.frame(response = "index", family = "gaussian")
+fit <- run_ecoglmm(
+  data = example_data,
+  config = config,
+  predictors = "forest",
+  period = "period",
+  group = "site",
+  include_interactions = FALSE
+)
+plot_coefficients(fit)
+}

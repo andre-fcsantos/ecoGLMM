@@ -6,6 +6,13 @@
 #' @param ndsi_output Name assigned to transformed NDSI.
 #' @param epsilon Boundary adjustment used by [adjust_beta()].
 #' @return A modified data frame.
+#' @examples
+#' indices <- data.frame(
+#'   NDSI = c(-1, 0, 1),
+#'   AEI = c(0, 0.5, 1),
+#'   ACT = c(0.2, 0.6, 0.9)
+#' )
+#' prepare_acoustic_indices(indices)
 #' @export
 prepare_acoustic_indices <- function(data, ndsi = "NDSI",
                                      beta_responses = c("AEI", "ACT"),
@@ -39,6 +46,19 @@ prepare_acoustic_indices <- function(data, ndsi = "NDSI",
 #'   candidate models. This should normally remain `TRUE` for valid AICc
 #'   comparisons.
 #' @return Prepared data with preparation metadata stored as attributes.
+#' @examples
+#' dat <- data.frame(
+#'   response = c(1.1, 1.4, 1.2, 1.8, 1.5, 2),
+#'   forest = c(10, 20, 30, 40, 50, 60),
+#'   period = rep(c("early", "late"), 3),
+#'   site = rep(c("a", "b", "c"), each = 2)
+#' )
+#' config <- data.frame(response = "response", family = "gaussian")
+#' prepared <- prepare_ecodata(
+#'   dat, config, predictors = "forest",
+#'   period = "period", group = "site"
+#' )
+#' head(prepared)
 #' @export
 prepare_ecodata <- function(data, config, predictors, period, group,
                             period_levels = NULL, standardize = TRUE,
