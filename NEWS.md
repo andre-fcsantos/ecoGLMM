@@ -1,9 +1,13 @@
 # ecoGLMM 0.1.3
 
+- Published on CRAN on 30 September 2026.
+- Assigned the permanent CRAN DOI
+  [10.32614/CRAN.package.ecoGLMM](https://doi.org/10.32614/CRAN.package.ecoGLMM).
+
 - Standardized the complete real-data workflow and documentation in English.
 - Added complete author metadata and ORCID identifiers for André Felipe
-  Carneiro dos Santos, Bárbara Lins Caldas de Moraes, and Bruna Martins
-  Bezerra.
+  Carneiro dos Santos, Bruna Martins Bezerra, and Bárbara Lins Caldas de
+  Moraes.
 - Restored `MuMIn::r.squaredGLMM()` as the primary R-squared method to match the
   original dissertation pipeline.
 - Added parallel Nakagawa R-squared results from `performance::r2_nakagawa()`
