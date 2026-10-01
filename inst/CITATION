@@ -25,5 +25,6 @@ bibentry(
   ),
   year = "2026",
   note = "R package version 0.1.3",
-  url = "https://github.com/andre-fcsantos/ecoGLMM"
+  doi = "10.32614/CRAN.package.ecoGLMM",
+  url = "https://cran.r-project.org/package=ecoGLMM"
 )
