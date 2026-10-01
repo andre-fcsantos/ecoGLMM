@@ -1,5 +1,10 @@
 # ecoGLMM
 
+[![CRAN status](https://www.r-pkg.org/badges/version/ecoGLMM)](https://cran.r-project.org/package=ecoGLMM)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/ecoGLMM)](https://cran.r-project.org/package=ecoGLMM)
+[![DOI](https://img.shields.io/badge/DOI-10.32614%2FCRAN.package.ecoGLMM-blue)](https://doi.org/10.32614/CRAN.package.ecoGLMM)
+[![R-CMD-check](https://github.com/andre-fcsantos/ecoGLMM/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andre-fcsantos/ecoGLMM/actions/workflows/R-CMD-check.yaml)
+
 `ecoGLMM` implements a reproducible candidate-model pipeline for ecological
 generalized linear mixed models. It was created from the ecoacoustic analysis
 workflow developed by André Felipe Carneiro dos Santos at the Graduate Program in Animal Biology,
@@ -17,17 +22,20 @@ response–predictor combination, compares models using AICc, performs nested
 likelihood-ratio tests, extracts coefficients and Nakagawa R², runs DHARMa
 diagnostics, creates figures, and exports results.
 
-## Installation from the source archive
+## Installation
+
+Install the stable release from CRAN:
 
 ```r
-install.packages("ecoGLMM_0.1.3.tar.gz", repos = NULL, type = "source")
+install.packages("ecoGLMM")
+library(ecoGLMM)
 ```
 
-## Installation from GitHub
+Install the development version from GitHub:
 
 ```r
 install.packages("remotes")
-remotes::install_github("andre-fcsantos/ecoGLMM")
+remotes::install_github("andre-fcsantos/ecoGLMM", upgrade = "never")
 ```
 
 ## Documentation
@@ -43,11 +51,29 @@ After installation, open the vignette with:
 vignette("getting-started", package = "ecoGLMM")
 ```
 
-Copy the complete script to the current working directory with:
+Copy the complete script to a writable directory with:
 
 ```r
-script <- system.file("examples", "ecoGLMM_template.R", package = "ecoGLMM")
-file.copy(script, "ecoGLMM_template.R")
+template_path <- system.file(
+  "examples",
+  "ecoGLMM_template.R",
+  package = "ecoGLMM"
+)
+
+if (!nzchar(template_path) || !file.exists(template_path)) {
+  stop("The generic analysis template was not found in the installed package.")
+}
+
+template_copy <- file.path(tempdir(), "ecoGLMM_template.R")
+copied <- file.copy(template_path, template_copy, overwrite = TRUE)
+
+if (!copied || !file.exists(template_copy) || file.size(template_copy) == 0) {
+  stop("The generic analysis template could not be copied correctly.")
+}
+
+if (interactive()) {
+  file.edit(template_copy)
+}
 ```
 
 Development dependencies can also be installed manually:
@@ -114,7 +140,13 @@ columns ending in `_performance`.
 - Only continuous environmental predictors are z-standardized. Period contrasts
   are not described as standardized coefficients.
 
+## Citation
+
+To cite `ecoGLMM` in publications, use `citation("ecoGLMM")`. The permanent
+CRAN DOI is [10.32614/CRAN.package.ecoGLMM](https://doi.org/10.32614/CRAN.package.ecoGLMM).
+
 ## Development status
 
-The package is under active development. Please report problems through the
-GitHub issue tracker.
+Version 0.1.3 is available on
+[CRAN](https://cran.r-project.org/package=ecoGLMM). Development continues on
+GitHub; please report problems through the issue tracker.
