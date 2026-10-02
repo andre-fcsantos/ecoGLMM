@@ -298,6 +298,39 @@ code. If the option is left disabled while the configured NDSI output is
 requested, the template returns a targeted instruction instead of a generic
 missing-column error.
 
+## Preflight checks and predictor redundancy
+
+Before fitting any model, the generic template checks that configured response
+and predictor columns are numeric and finite, that predictors are not constant,
+and that group and period variables contain at least two observed levels. It
+also verifies that response values satisfy the selected distribution: beta
+responses must lie strictly between zero and one, Gamma responses must be
+positive, and Poisson or negative-binomial responses must be non-negative
+integers.
+
+When `CHECK_PREDICTOR_CORRELATIONS <- TRUE`, the template calculates all
+pairwise correlations among the environmental predictors. The method and
+warning threshold are controlled in Section 01:
+
+```{r correlation-settings, eval=FALSE}
+CHECK_PREDICTOR_CORRELATIONS <- TRUE
+CORRELATION_METHOD <- "spearman"
+CORRELATION_THRESHOLD <- 0.70
+```
+
+This screen is descriptive. It warns when two predictors may represent
+redundant ecological hypotheses, but it never removes variables or changes the
+candidate set. Classical variance inflation factors (VIF) are not calculated
+because ecoGLMM currently fits one environmental predictor per candidate model;
+VIF diagnoses collinearity among multiple predictors included in the same
+model. If multivariable candidate models are added in a future release, VIF or
+a comparable conditional-collinearity diagnostic should be assessed for those
+models.
+
+The template saves `data_quality.csv`, `predictor_correlations.csv`, and
+`preflight_checks.rds` beside the regular model outputs so the checks can be
+reported and reproduced.
+
 ## Reproducibility recommendations
 
 - Preserve the original data and analyse a separate working copy.
