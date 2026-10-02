@@ -22,6 +22,10 @@ response–predictor combination, compares models using AICc, performs nested
 likelihood-ratio tests, extracts coefficients and Nakagawa R², runs DHARMa
 diagnostics, creates figures, and exports results.
 
+When diagnostics are supplied to `export_ecoglmm()`, the export includes a
+multi-page `DHARMa_diagnostics.pdf` containing the residual panels and a test
+summary for every selected response model.
+
 ## Installation
 
 Install the stable release from CRAN:
