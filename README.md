@@ -17,7 +17,7 @@ Universidade Federal de Pernambuco (UFPE).
 - Bruna Martins Bezerra — author — ORCID: 0000-0003-3039-121X
 - Bárbara Lins Caldas de Moraes — author — ORCID: 0000-0002-1804-9828
 
-Version 0.1.3 fits one additive and one temporal-interaction model for each
+The current stable release fits one additive and one temporal-interaction model for each
 response–predictor combination, compares models using AICc, performs nested
 likelihood-ratio tests, extracts coefficients and Nakagawa R², runs DHARMa
 diagnostics, creates figures, and exports results.
@@ -130,6 +130,15 @@ columns ending in `_performance`.
 
 ## Important statistical safeguards
 
+- Before fitting models, the generic template checks column types, response
+  values against their configured families, non-finite values, constant
+  predictors, group and period levels, and the number of complete observations.
+- The template optionally calculates pairwise Pearson, Spearman, or Kendall
+  correlations among environmental predictors and flags values above a
+  user-defined threshold. It never removes predictors automatically.
+- Classical VIF is not calculated because the current ecoGLMM candidate set
+  contains only one environmental predictor per model. VIF becomes relevant
+  only if a future model contains multiple predictors simultaneously.
 - Candidate models are fitted to one shared complete-case dataset by default,
   ensuring that AICc values are based on identical observations.
 - AICc comparison stops if models have different sample sizes.
@@ -149,4 +158,4 @@ CRAN DOI is [10.32614/CRAN.package.ecoGLMM](https://doi.org/10.32614/CRAN.packag
 
 Version 0.1.3 is available on
 [CRAN](https://cran.r-project.org/package=ecoGLMM). Development continues on
-GitHub; please report problems through the issue tracker.
+GitHub as version 0.1.3.9000; please report problems through the issue tracker.
