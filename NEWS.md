@@ -1,3 +1,17 @@
+# ecoGLMM 0.1.3.9000
+
+- Added preflight data-quality checks to the generic analysis template,
+  including response-family validation, non-finite-value detection, constant
+  predictor detection, and summaries of missing and unique values.
+- Added an optional predictor-correlation screen to the template. Because the
+  current candidate set fits one environmental predictor per model, the screen
+  reports potentially redundant ecological hypotheses without applying VIF or
+  removing variables automatically.
+- Added exports for the data-quality summary, predictor correlations, and the
+  complete preflight-check object.
+- Added an automated test ensuring that the installed generic template exists,
+  is non-empty, and can be parsed by R.
+
 # ecoGLMM 0.1.3
 
 - Published on CRAN on 30 September 2026.
