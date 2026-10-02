@@ -8,7 +8,8 @@ export_ecoglmm(
   object,
   path,
   diagnostics = NULL,
-  figures = TRUE
+  figures = TRUE,
+  diagnostic_pdf = TRUE
 )
 }
 \arguments{
@@ -19,6 +20,10 @@ export_ecoglmm(
 \item{diagnostics}{Optional result returned by [diagnose_models()].}
 
 \item{figures}{Save effect and selection figures.}
+
+\item{diagnostic_pdf}{Save a multi-page PDF containing the DHARMa plot and
+a diagnostic summary for each selected response model. The PDF is created
+only when \code{diagnostics} is supplied.}
 }
 \value{
 Invisibly returns generated file paths.

@@ -212,7 +212,9 @@ exported_files
 
 The output directory contains an Excel workbook with the overview,
 coefficients, model-selection results, interaction tests, and diagnostics. When
-`figures = TRUE`, publication-quality PNG files are also created.
+`figures = TRUE`, publication-quality PNG files are also created. When a
+diagnostics object is supplied, `DHARMa_diagnostics.pdf` is generated with the
+residual panels and a formal-test summary for every selected response model.
 
 ## Use the complete generic analysis template
 

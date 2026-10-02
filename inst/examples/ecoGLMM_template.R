@@ -739,7 +739,8 @@ generated_files <- ecoGLMM::export_ecoglmm(
   object = results,
   path = OUTPUT_DIRECTORY,
   diagnostics = diagnostics,
-  figures = TRUE
+  figures = TRUE,
+  diagnostic_pdf = TRUE
 )
 
 generated_files <- c(
