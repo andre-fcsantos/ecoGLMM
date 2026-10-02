@@ -11,6 +11,8 @@
   complete preflight-check object.
 - Added an automated test ensuring that the installed generic template exists,
   is non-empty, and can be parsed by R.
+- Restored automatic export of a multi-page `DHARMa_diagnostics.pdf`, with the
+  residual panels and a formal-test summary for every selected response model.
 
 # ecoGLMM 0.1.3
 
