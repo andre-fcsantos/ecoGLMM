@@ -1,4 +1,4 @@
-# ecoGLMM 0.1.3.9000
+# ecoGLMM 0.1.4
 
 - Added preflight data-quality checks to the generic analysis template,
   including response-family validation, non-finite-value detection, constant
