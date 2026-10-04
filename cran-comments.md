@@ -1,31 +1,34 @@
-## Resubmission
+## Update from ecoGLMM 0.1.3
 
-This resubmission adds small executable examples for every exported function,
-as requested by CRAN. The examples use simulated data, write temporary output
-only to tempdir(), and are run automatically by R CMD check.
+This update improves the generic analysis template with preflight data-quality
+checks and an optional predictor-correlation screen. It also restores the
+multi-page DHARMa diagnostic PDF export and documents these changes in the
+vignette.
 
-## Test environments
+The correlation screen reports redundancy among environmental predictors.
+It does not remove variables automatically or apply VIF to the current
+single-environmental-predictor candidate models.
 
-* Local: Windows 10 x64, R 4.6.0
-* GitHub Actions:
-  * Windows, R release
-  * macOS, R release
-  * Ubuntu, R release
-  * Ubuntu, R-devel
-* win-builder: Windows Server 2022 x64, R-devel
+Writing functions require an explicit output path. Packaged examples and
+the template use temporary output directories by default.
 
-## R CMD check results
+## Release verification
 
-The package is checked with 0 errors and 0 warnings. The only incoming NOTE
-identifies this as a new submission and flags technical terms and cited author
-surnames.
+This file is a preparation draft for ecoGLMM 0.1.4.
+Record the final local R CMD check --as-cran and win-builder results for
+this version before submitting it to CRAN. Results from older versions
+must not be reported as checks of this release.
+
+The GitHub Actions workflow checks Windows, macOS and Ubuntu with R release,
+and Ubuntu with R-devel. Confirm that all jobs pass for the final release
+commit before submission.
 
 ## Notes
 
 "AICc" is the standard abbreviation for the small-sample corrected Akaike
-information criterion. Burnham, Nakagawa, and Schielzeth are surnames in the
-methodological references included in DESCRIPTION.
+information criterion. Burnham, Nakagawa and Schielzeth are surnames in
+the methodological references included in DESCRIPTION.
 
 ## Downstream dependencies
 
-There are currently no downstream dependencies.
+Verify the current reverse-dependency status before submission.
